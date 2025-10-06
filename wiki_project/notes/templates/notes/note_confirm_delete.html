@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление заметки - Мини-Wiki{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Подтверждение удаления
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Вы уверены, что хотите удалить заметку?</p>
+                
+                <div class="alert alert-warning">
+                    <strong>Внимание!</strong> Это действие нельзя будет отменить.
+                </div>
+
+                <div class="bg-light p-3 rounded mb-3">
+                    <h5>{{ note.title }}</h5>
+                    <p class="text-muted mb-0">
+                        Создано: {{ note.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Да, удалить
+                        </button>
+                        <a href="{% url 'note_detail' note.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

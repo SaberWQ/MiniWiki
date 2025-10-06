@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ note.title }} - Мини-Wiki{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Заголовок и метаданные -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{{ note.title }}</h1>
+                
+                <div class="mb-3">
+                    {% if note.category %}
+                    <span class="badge bg-info">
+                        <i class="fas fa-folder"></i> {{ note.category.name }}
+                    </span>
+                    {% endif %}
+                    {% if note.is_public %}
+                    <span class="badge bg-success">
+                        <i class="fas fa-globe"></i> Публичная
+                    </span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">
+                        <i class="fas fa-lock"></i> Приватная
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="text-muted mb-3">
+                    <i class="fas fa-user"></i> Автор: <strong>{{ note.author.username }}</strong><br>
+                    <i class="fas fa-calendar-plus"></i> Создано: {{ note.created_at|date:"d.m.Y H:i" }}<br>
+                    <i class="fas fa-calendar-edit"></i> Обновлено: {{ note.updated_at|date:"d.m.Y H:i" }}<br>
+                    <i class="fas fa-eye"></i> Просмотров: {{ note.views_count }}
+                </div>
+
+                <!-- Теги -->
+                {% if tags %}
+                <div class="mb-3">
+                    <strong>Теги:</strong>
+                    {% for note_tag in tags %}
+                    <span class="badge bg-secondary">
+                        <i class="fas fa-tag"></i> {{ note_tag.tag.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Действия для автора -->
+                {% if user == note.author %}
+                <div class="mb-3">
+                    <a href="{% url 'note_update' note.pk %}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </a>
+                    <a href="{% url 'note_delete' note.pk %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Удалить
+                    </a>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <!-- Содержание заметки -->
+                <div class="note-content">
+                    {{ note.content|linebreaks }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Комментарии -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-comments"></i> Комментарии ({{ comments.count }})
+            </div>
+            <div class="card-body">
+                <!-- Форма добавления комментария -->
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_comment' note.pk %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ comment_form.text }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Отправить комментарий
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    <a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий.
+                </div>
+                {% endif %}
+
+                <!-- Список комментариев -->
+                {% if comments %}
+                <hr>
+                {% for comment in comments %}
+                <div class="comment mb-3 p-3 bg-light rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ comment.author.username }}</strong>
+                            <small class="text-muted">
+                                - {{ comment.created_at|date:"d.m.Y H:i" }}
+                            </small>
+                        </div>
+                    </div>
+                    <p class="mb-0 mt-2">{{ comment.text|linebreaks }}</p>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-muted">Комментариев пока нет. Будьте первым!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Кнопка возврата -->
+        <div class="mt-3">
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Вернуться к списку
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

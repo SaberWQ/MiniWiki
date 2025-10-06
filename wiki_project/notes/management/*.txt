@@ -1,0 +1,12 @@
+python3 wiki_project/manage.py populate_db
+python3 wiki_project/manage.py makemigrations
+python3 wiki_project/manage.py migrate
+python3 wiki_project/manage.py createsuperuser
+python3 wiki_project/manage.py runserver
+python3 wiki_project/manage.py startapp app_name
+python3 wiki_project/manage.py check
+python3 wiki_project/manage.py makemigrations
+python3 wiki_project/manage.py sqlmigrate notes 0001
+python3 wiki_project/manage.py shell
+python3 wiki_project/manage.py collectstatic
+python3 wiki_project/manage.py test

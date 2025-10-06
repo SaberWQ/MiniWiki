@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои заметки - Мини-Wiki{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-user"></i> Мои заметки</h1>
+    <a href="{% url 'note_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Создать заметку
+    </a>
+</div>
+
+{% if notes %}
+<div class="row">
+    {% for note in notes %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card note-card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{% url 'note_detail' note.pk %}" class="text-decoration-none">
+                        {{ note.title }}
+                    </a>
+                </h5>
+                <p class="card-text text-muted">
+                    {{ note.content|truncatewords:20 }}
+                </p>
+                <div class="mb-2">
+                    {% if note.category %}
+                    <span class="badge bg-info">
+                        <i class="fas fa-folder"></i> {{ note.category.name }}
+                    </span>
+                    {% endif %}
+                    {% if note.is_public %}
+                    <span class="badge bg-success">
+                        <i class="fas fa-globe"></i> Публичная
+                    </span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">
+                        <i class="fas fa-lock"></i> Приватная
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar"></i> {{ note.created_at|date:"d.m.Y" }}
+                    </small>
+                    <div>
+                        <a href="{% url 'note_update' note.pk %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'note_delete' note.pk %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Пагинация -->
+{% if is_paginated %}
+<nav aria-label="Навигация по страницам">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-3x mb-3"></i>
+    <h4>У вас пока нет заметок</h4>
+    <p>Создайте свою первую заметку, чтобы начать работу!</p>
+    <a href="{% url 'note_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Создать заметку
+    </a>
+</div>
+{% endif %}
+{% endblock %}
